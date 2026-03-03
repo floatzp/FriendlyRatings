@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>7v7 Match Ratings</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0f172a;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin: 20px;
+}
+
+.field {
+    width: 700px;
+    height: 1000px;
+    margin: auto;
+    background: linear-gradient(#1f7a3d 50%, #166534 50%);
+    border: 5px solid white;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 30px black;
+}
+
+/* Midfield Line */
+.field::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: white;
+}
+
+.player {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 3px solid white;
+    transition: transform 0.2s ease;
+}
+
+.player:hover {
+    transform: scale(1.1);
+}
+
+.rating {
+    font-size: 18px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 8px 15px;
+    background: #3b82f6;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>7v7 Match Ratings</h1>
+
+<div class="field" id="field"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="playerName"></h2>
+    <p id="playerStats"></p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+const players = [
+  // TEAM A (bottom)
+  {name:"GK A", rating:7.2, x:312, y:880, stats:"Saves: 4"},
+  {name:"DEF A1", rating:8.0, x:100, y:750, stats:"Tackles: 5"},
+  {name:"DEF A2", rating:7.4, x:312, y:750, stats:"Tackles: 3"},
+  {name:"DEF A3", rating:6.8, x:525, y:750, stats:"Tackles: 2"},
+  {name:"MID A1", rating:8.9, x:200, y:600, stats:"Assists: 1"},
+  {name:"MID A2", rating:8.2, x:425, y:600, stats:"Key Passes: 4"},
+  {name:"ST A", rating:9.3, x:312, y:470, stats:"Goals: 2"},
+
+  // TEAM B (top)
+  {name:"GK B", rating:6.9, x:312, y:50, stats:"Saves: 2"},
+  {name:"DEF B1", rating:7.3, x:100, y:180, stats:"Tackles: 4"},
+  {name:"DEF B2", rating:7.0, x:312, y:180, stats:"Tackles: 3"},
+  {name:"DEF B3", rating:6.5, x:525, y:180, stats:"Tackles: 1"},
+  {name:"MID B1", rating:7.8, x:200, y:330, stats:"Assists: 0"},
+  {name:"MID B2", rating:8.1, x:425, y:330, stats:"Key Passes: 3"},
+  {name:"ST B", rating:8.7, x:312, y:460, stats:"Goals: 1"},
+];
+
+const field = document.getElementById("field");
+
+function getColor(rating) {
+  if (rating >= 9) return "#16a34a";
+  if (rating >= 8) return "#22c55e";
+  if (rating >= 7) return "#eab308";
+  if (rating >= 6) return "#f97316";
+  return "#dc2626";
+}
+
+players.forEach(player => {
+  const div = document.createElement("div");
+  div.className = "player";
+  div.style.left = player.x + "px";
+  div.style.top = player.y + "px";
+  div.style.background = getColor(player.rating);
+
+  div.innerHTML = `
+    <div>${player.name}</div>
+    <div class="rating">${player.rating}</div>
+  `;
+
+  div.onclick = () => openModal(player);
+  field.appendChild(div);
+});
+
+function openModal(player) {
+  document.getElementById("playerName").innerText = player.name + " (" + player.rating + ")";
+  document.getElementById("playerStats").innerText = player.stats;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+</script>
+
+</body>
+</html>
