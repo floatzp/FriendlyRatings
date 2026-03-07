@@ -32,6 +32,7 @@ margin:auto;
 position:relative;
 border:5px solid white;
 border-radius:8px;
+overflow:hidden;
 
 /* grass stripes */
 background:
@@ -45,7 +46,7 @@ repeating-linear-gradient(
 
 }
 
-/* center circle */
+/* HALF center circle */
 
 .centerCircle{
 position:absolute;
@@ -53,9 +54,9 @@ width:160px;
 height:160px;
 border:3px solid white;
 border-radius:50%;
-top:0%;
+top:-80px;
 left:50%;
-transform:translate(-50%,-50%);
+transform:translateX(-50%);
 }
 
 /* penalty box */
@@ -69,8 +70,6 @@ left:50%;
 transform:translateX(-50%);
 bottom:0;
 }
-
-/* 6 yard box */
 
 .sixBottom{
 position:absolute;
@@ -91,7 +90,7 @@ text-align:center;
 cursor:pointer;
 }
 
-/* player name ABOVE circle */
+/* name above avatar */
 
 .name{
 font-size:12px;
@@ -109,7 +108,6 @@ border:2px solid white;
 background-size:cover;
 background-position:center;
 margin:auto;
-overflow:hidden;
 }
 
 /* rating */
@@ -130,11 +128,15 @@ font-size:14px;
 margin-top:2px;
 }
 
-.card{
+/* cards container */
+
+.cards{
 position:absolute;
-top:12px;
-right:5px;
-font-size:16px;
+top:10px;
+right:-5px;
+display:flex;
+gap:2px;
+font-size:14px;
 }
 
 /* modal */
@@ -231,8 +233,6 @@ Red Card
 
 <script>
 
-/* updated password */
-
 const password="W0rG1Ax3c8e"
 
 let admin=false
@@ -277,14 +277,14 @@ div.className="player"
 div.style.left=p.x+"px"
 div.style.top=p.y+"px"
 
-let card=""
-
-if(p.red)card="🟥"
-else if(p.yellow)card="🟨"
-
 let events=""
 events+="⚽".repeat(p.goals)
 events+="👟".repeat(p.assists)
+
+/* cards logic */
+let cardsHTML=""
+if(p.yellow) cardsHTML+="🟨"
+if(p.red) cardsHTML+="🟥"
 
 div.innerHTML=`
 
@@ -292,7 +292,7 @@ div.innerHTML=`
 
 <div class="avatar" style="background-image:url('${p.avatar}')"></div>
 
-<div class="card">${card}</div>
+<div class="cards">${cardsHTML}</div>
 
 <div class="event">${events}</div>
 
