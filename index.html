@@ -5,88 +5,93 @@
 <title>7v7 Match Ratings</title>
 
 <style>
-body {
-    margin: 0;
-    background: #0f172a;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
+body{
+margin:0;
+background:#0f172a;
+font-family:Arial;
+color:white;
+text-align:center;
 }
 
-h1 {
-    margin: 20px;
+h1{
+margin:20px;
 }
 
-.field {
-    width: 700px;
-    height: 1000px;
-    margin: auto;
-    background: linear-gradient(#1f7a3d 50%, #166534 50%);
-    border: 5px solid white;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 0 30px black;
+.field{
+width:720px;
+height:1000px;
+margin:auto;
+background:linear-gradient(#1f7a3d 50%, #166534 50%);
+border:5px solid white;
+border-radius:10px;
+position:relative;
+box-shadow:0 0 25px black;
 }
 
-/* Midfield Line */
-.field::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: white;
+.field:after{
+content:"";
+position:absolute;
+top:50%;
+left:0;
+width:100%;
+height:3px;
+background:white;
 }
 
-.player {
-    width: 75px;
-    height: 75px;
-    border-radius: 50%;
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    border: 3px solid white;
-    transition: transform 0.2s ease;
+.player{
+width:80px;
+height:80px;
+border-radius:50%;
+position:absolute;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:13px;
+font-weight:bold;
+border:3px solid white;
+cursor:pointer;
+transition:0.2s;
 }
 
-.player:hover {
-    transform: scale(1.1);
+.player:hover{
+transform:scale(1.08);
 }
 
-.rating {
-    font-size: 18px;
+.rating{
+font-size:18px;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    align-items: center;
-    justify-content: center;
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.7);
+align-items:center;
+justify-content:center;
 }
 
-.modal-content {
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 10px;
-    width: 300px;
+.modalBox{
+background:#1e293b;
+padding:25px;
+border-radius:10px;
+width:320px;
 }
 
-button {
-    margin-top: 15px;
-    padding: 8px 15px;
-    background: #3b82f6;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
+input{
+width:100%;
+padding:6px;
+margin-top:6px;
+margin-bottom:10px;
+}
+
+button{
+padding:8px 16px;
+border:none;
+background:#3b82f6;
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -98,69 +103,179 @@ button {
 <div class="field" id="field"></div>
 
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h2 id="playerName"></h2>
-    <p id="playerStats"></p>
-    <button onclick="closeModal()">Close</button>
-  </div>
+<div class="modalBox">
+
+<h2 id="pName"></h2>
+
+<div id="viewStats"></div>
+
+<div id="editStats" style="display:none">
+
+Name
+<input id="editName">
+
+Rating
+<input id="editRating" type="number" step="0.1">
+
+Goals
+<input id="editGoals" type="number">
+
+Assists
+<input id="editAssists" type="number">
+
+<button onclick="savePlayer()">Save</button>
+
+</div>
+
+<button onclick="closeModal()">Close</button>
+
+</div>
 </div>
 
 <script>
-const players = [
-  // TEAM A (bottom)
-  {name:"GK A", rating:7.2, x:312, y:880, stats:"Saves: 4"},
-  {name:"DEF A1", rating:8.0, x:100, y:750, stats:"Tackles: 5"},
-  {name:"DEF A2", rating:7.4, x:312, y:750, stats:"Tackles: 3"},
-  {name:"DEF A3", rating:6.8, x:525, y:750, stats:"Tackles: 2"},
-  {name:"MID A1", rating:8.9, x:200, y:600, stats:"Assists: 1"},
-  {name:"MID A2", rating:8.2, x:425, y:600, stats:"Key Passes: 4"},
-  {name:"ST A", rating:9.3, x:312, y:470, stats:"Goals: 2"},
 
-  // TEAM B (top)
-  {name:"GK B", rating:6.9, x:312, y:50, stats:"Saves: 2"},
-  {name:"DEF B1", rating:7.3, x:100, y:180, stats:"Tackles: 4"},
-  {name:"DEF B2", rating:7.0, x:312, y:180, stats:"Tackles: 3"},
-  {name:"DEF B3", rating:6.5, x:525, y:180, stats:"Tackles: 1"},
-  {name:"MID B1", rating:7.8, x:200, y:330, stats:"Assists: 0"},
-  {name:"MID B2", rating:8.1, x:425, y:330, stats:"Key Passes: 3"},
-  {name:"ST B", rating:8.7, x:312, y:460, stats:"Goals: 1"},
-];
+let admin=false
+const password="soccer123"
 
-const field = document.getElementById("field");
+const players=[
 
-function getColor(rating) {
-  if (rating >= 9) return "#16a34a";
-  if (rating >= 8) return "#22c55e";
-  if (rating >= 7) return "#eab308";
-  if (rating >= 6) return "#f97316";
-  return "#dc2626";
+{name:"GK A",rating:7.4,goals:0,assists:0,x:320,y:900},
+
+{name:"LB A",rating:7.8,goals:0,assists:1,x:120,y:740},
+{name:"CB A",rating:7.1,goals:0,assists:0,x:320,y:760},
+{name:"RB A",rating:7.0,goals:0,assists:0,x:520,y:740},
+
+{name:"LM A",rating:8.3,goals:1,assists:1,x:180,y:560},
+{name:"RM A",rating:8.1,goals:0,assists:2,x:460,y:560},
+
+{name:"ST A",rating:9.2,goals:2,assists:0,x:320,y:420},
+
+{name:"GK B",rating:6.8,goals:0,assists:0,x:320,y:60},
+
+{name:"LB B",rating:7.3,goals:0,assists:0,x:120,y:200},
+{name:"CB B",rating:7.0,goals:0,assists:0,x:320,y:180},
+{name:"RB B",rating:6.9,goals:0,assists:0,x:520,y:200},
+
+{name:"LM B",rating:7.5,goals:0,assists:1,x:180,y:380},
+{name:"RM B",rating:7.7,goals:1,assists:0,x:460,y:380},
+
+{name:"ST B",rating:8.6,goals:1,assists:0,x:320,y:520}
+
+]
+
+const field=document.getElementById("field")
+
+function ratingColor(r){
+if(r>=9)return"#16a34a"
+if(r>=8)return"#22c55e"
+if(r>=7)return"#eab308"
+if(r>=6)return"#f97316"
+return"#dc2626"
 }
 
-players.forEach(player => {
-  const div = document.createElement("div");
-  div.className = "player";
-  div.style.left = player.x + "px";
-  div.style.top = player.y + "px";
-  div.style.background = getColor(player.rating);
+function render(){
 
-  div.innerHTML = `
-    <div>${player.name}</div>
-    <div class="rating">${player.rating}</div>
-  `;
+field.innerHTML=""
 
-  div.onclick = () => openModal(player);
-  field.appendChild(div);
-});
+players.forEach((p,i)=>{
 
-function openModal(player) {
-  document.getElementById("playerName").innerText = player.name + " (" + player.rating + ")";
-  document.getElementById("playerStats").innerText = player.stats;
-  document.getElementById("modal").style.display = "flex";
+let div=document.createElement("div")
+
+div.className="player"
+
+div.style.left=p.x+"px"
+div.style.top=p.y+"px"
+
+div.style.background=ratingColor(p.rating)
+
+div.innerHTML=`
+<div>${p.name}</div>
+<div class="rating">${p.rating}</div>
+`
+
+div.onclick=()=>openPlayer(i)
+
+field.appendChild(div)
+
+})
+
 }
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
+let current=null
+
+function openPlayer(i){
+
+current=i
+let p=players[i]
+
+document.getElementById("pName").innerText=p.name
+
+document.getElementById("viewStats").innerHTML=`
+Goals: ${p.goals}<br>
+Assists: ${p.assists}<br>
+Rating: ${p.rating}
+`
+
+if(admin){
+
+document.getElementById("editStats").style.display="block"
+
+editName.value=p.name
+editRating.value=p.rating
+editGoals.value=p.goals
+editAssists.value=p.assists
+
+}else{
+
+document.getElementById("editStats").style.display="none"
+
 }
+
+modal.style.display="flex"
+
+}
+
+function savePlayer(){
+
+let p=players[current]
+
+p.name=editName.value
+p.rating=parseFloat(editRating.value)
+p.goals=parseInt(editGoals.value)
+p.assists=parseInt(editAssists.value)
+
+render()
+closeModal()
+
+}
+
+function closeModal(){
+modal.style.display="none"
+}
+
+document.addEventListener("keydown",e=>{
+
+if(e.shiftKey && e.key==="E"){
+
+let input=prompt("Admin Password")
+
+if(input===password){
+
+admin=true
+alert("Edit Mode Enabled")
+
+}else{
+
+alert("Wrong password")
+
+}
+
+}
+
+})
+
+render()
+
 </script>
 
 </body>
