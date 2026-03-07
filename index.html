@@ -23,14 +23,26 @@ font-size:22px;
 font-weight:bold;
 }
 
+/* pitch */
+
 .field{
 width:700px;
 height:600px;
 margin:auto;
 position:relative;
-background:#1f7a3f;
 border:5px solid white;
 border-radius:8px;
+
+/* grass stripes */
+background:
+repeating-linear-gradient(
+90deg,
+#1f7a3f 0px,
+#1f7a3f 60px,
+#1c6f39 60px,
+#1c6f39 120px
+);
+
 }
 
 /* center circle */
@@ -74,20 +86,33 @@ bottom:0;
 
 .player{
 position:absolute;
-width:70px;
+width:80px;
 text-align:center;
 cursor:pointer;
 }
+
+/* player name ABOVE circle */
+
+.name{
+font-size:12px;
+font-weight:bold;
+margin-bottom:3px;
+}
+
+/* avatar */
 
 .avatar{
 width:60px;
 height:60px;
 border-radius:50%;
-border:3px solid white;
+border:2px solid white;
 background-size:cover;
 background-position:center;
 margin:auto;
+overflow:hidden;
 }
+
+/* rating */
 
 .rating{
 margin-top:4px;
@@ -98,6 +123,8 @@ border-radius:4px;
 display:inline-block;
 }
 
+/* events */
+
 .event{
 font-size:14px;
 margin-top:2px;
@@ -105,8 +132,8 @@ margin-top:2px;
 
 .card{
 position:absolute;
-top:-8px;
-right:-5px;
+top:12px;
+right:5px;
 font-size:16px;
 }
 
@@ -172,7 +199,7 @@ cursor:pointer;
 
 <div id="editArea" style="display:none">
 
-Avatar URL
+Avatar PNG URL
 <input id="editAvatar">
 
 Name
@@ -204,7 +231,10 @@ Red Card
 
 <script>
 
-const password="soccer123"
+/* updated password */
+
+const password="W0rG1Ax3c8e"
+
 let admin=false
 
 let players=[
@@ -257,6 +287,8 @@ events+="⚽".repeat(p.goals)
 events+="👟".repeat(p.assists)
 
 div.innerHTML=`
+
+<div class="name">${p.name}</div>
 
 <div class="avatar" style="background-image:url('${p.avatar}')"></div>
 
