@@ -5,6 +5,7 @@
 <title>7v7 Match Ratings</title>
 
 <style>
+
 body{
 margin:0;
 background:#0f172a;
@@ -13,26 +14,40 @@ color:white;
 text-align:center;
 }
 
-h1{
+.header{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:25px;
 margin:20px;
+flex-wrap:wrap;
+}
+
+.team{
+font-size:22px;
+font-weight:bold;
+}
+
+.score{
+font-size:26px;
+font-weight:bold;
 }
 
 .field{
-width:720px;
+width:90vw;
+max-width:720px;
 height:1000px;
 margin:auto;
 background:linear-gradient(#1f7a3d 50%, #166534 50%);
 border:5px solid white;
 border-radius:10px;
 position:relative;
-box-shadow:0 0 25px black;
 }
 
 .field:after{
 content:"";
 position:absolute;
 top:50%;
-left:0;
 width:100%;
 height:3px;
 background:white;
@@ -47,15 +62,10 @@ display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-font-size:13px;
+font-size:12px;
 font-weight:bold;
 border:3px solid white;
 cursor:pointer;
-transition:0.2s;
-}
-
-.player:hover{
-transform:scale(1.08);
 }
 
 .rating{
@@ -71,7 +81,7 @@ align-items:center;
 justify-content:center;
 }
 
-.modalBox{
+.box{
 background:#1e293b;
 padding:25px;
 border-radius:10px;
@@ -81,35 +91,53 @@ width:320px;
 input{
 width:100%;
 padding:6px;
-margin-top:6px;
-margin-bottom:10px;
+margin:6px 0;
 }
 
 button{
-padding:8px 16px;
-border:none;
+padding:8px 14px;
 background:#3b82f6;
+border:none;
 color:white;
 border-radius:6px;
 cursor:pointer;
 }
+
+.controls{
+margin:20px;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>7v7 Match Ratings</h1>
+<div class="header">
+
+<div class="team" id="teamA">Team A</div>
+
+<div class="score">
+<span id="scoreA">0</span> - <span id="scoreB">0</span>
+</div>
+
+<div class="team" id="teamB">Team B</div>
+
+</div>
+
+<div class="controls">
+<button onclick="exportImage()">Export Lineup</button>
+</div>
 
 <div class="field" id="field"></div>
 
 <div class="modal" id="modal">
-<div class="modalBox">
+<div class="box">
 
 <h2 id="pName"></h2>
 
 <div id="viewStats"></div>
 
-<div id="editStats" style="display:none">
+<div id="editArea" style="display:none">
 
 Name
 <input id="editName">
@@ -134,10 +162,20 @@ Assists
 
 <script>
 
-let admin=false
 const password="soccer123"
+let admin=false
 
-const players=[
+let data = JSON.parse(localStorage.getItem("matchData"))
+
+if(!data){
+
+data={
+teamA:"Team A",
+teamB:"Team B",
+scoreA:0,
+scoreB:0,
+
+players:[
 
 {name:"GK A",rating:7.4,goals:0,assists:0,x:320,y:900},
 
@@ -148,7 +186,7 @@ const players=[
 {name:"LM A",rating:8.3,goals:1,assists:1,x:180,y:560},
 {name:"RM A",rating:8.1,goals:0,assists:2,x:460,y:560},
 
-{name:"ST A",rating:9.2,goals:2,assists:0,x:320,y:420},
+{name:"ST A",rating:9.2,goals:2,assists:0,x:200,y:420},
 
 {name:"GK B",rating:6.8,goals:0,assists:0,x:320,y:60},
 
@@ -159,25 +197,41 @@ const players=[
 {name:"LM B",rating:7.5,goals:0,assists:1,x:180,y:380},
 {name:"RM B",rating:7.7,goals:1,assists:0,x:460,y:380},
 
-{name:"ST B",rating:8.6,goals:1,assists:0,x:320,y:520}
+{name:"ST B",rating:8.6,goals:1,assists:0,x:440,y:520}
 
 ]
 
-const field=document.getElementById("field")
+}
+
+}
+
+function saveData(){
+localStorage.setItem("matchData",JSON.stringify(data))
+}
 
 function ratingColor(r){
+
 if(r>=9)return"#16a34a"
 if(r>=8)return"#22c55e"
 if(r>=7)return"#eab308"
 if(r>=6)return"#f97316"
 return"#dc2626"
+
 }
+
+const field=document.getElementById("field")
 
 function render(){
 
 field.innerHTML=""
 
-players.forEach((p,i)=>{
+teamA.innerText=data.teamA
+teamB.innerText=data.teamB
+
+scoreA.innerText=data.scoreA
+scoreB.innerText=data.scoreB
+
+data.players.forEach((p,i)=>{
 
 let div=document.createElement("div")
 
@@ -195,6 +249,22 @@ div.innerHTML=`
 
 div.onclick=()=>openPlayer(i)
 
+if(admin){
+
+div.draggable=true
+
+div.ondragend=(e)=>{
+
+p.x=e.pageX-field.offsetLeft-40
+p.y=e.pageY-field.offsetTop-40
+
+saveData()
+render()
+
+}
+
+}
+
 field.appendChild(div)
 
 })
@@ -206,11 +276,12 @@ let current=null
 function openPlayer(i){
 
 current=i
-let p=players[i]
 
-document.getElementById("pName").innerText=p.name
+let p=data.players[i]
 
-document.getElementById("viewStats").innerHTML=`
+pName.innerText=p.name
+
+viewStats.innerHTML=`
 Goals: ${p.goals}<br>
 Assists: ${p.assists}<br>
 Rating: ${p.rating}
@@ -218,7 +289,7 @@ Rating: ${p.rating}
 
 if(admin){
 
-document.getElementById("editStats").style.display="block"
+editArea.style.display="block"
 
 editName.value=p.name
 editRating.value=p.rating
@@ -227,7 +298,7 @@ editAssists.value=p.assists
 
 }else{
 
-document.getElementById("editStats").style.display="none"
+editArea.style.display="none"
 
 }
 
@@ -237,14 +308,17 @@ modal.style.display="flex"
 
 function savePlayer(){
 
-let p=players[current]
+let p=data.players[current]
 
 p.name=editName.value
 p.rating=parseFloat(editRating.value)
 p.goals=parseInt(editGoals.value)
 p.assists=parseInt(editAssists.value)
 
+saveData()
+
 render()
+
 closeModal()
 
 }
@@ -257,16 +331,29 @@ document.addEventListener("keydown",e=>{
 
 if(e.shiftKey && e.key==="E"){
 
-let input=prompt("Admin Password")
+let pass=prompt("Admin Password")
 
-if(input===password){
+if(pass===password){
 
 admin=true
-alert("Edit Mode Enabled")
 
-}else{
+let newA=prompt("Team A name",data.teamA)
+if(newA)data.teamA=newA
 
-alert("Wrong password")
+let newB=prompt("Team B name",data.teamB)
+if(newB)data.teamB=newB
+
+let sA=prompt("Score A",data.scoreA)
+let sB=prompt("Score B",data.scoreB)
+
+data.scoreA=parseInt(sA)
+data.scoreB=parseInt(sB)
+
+saveData()
+
+alert("Edit mode enabled")
+
+render()
 
 }
 
@@ -274,9 +361,28 @@ alert("Wrong password")
 
 })
 
+function exportImage(){
+
+html2canvas(document.body).then(canvas=>{
+
+let link=document.createElement("a")
+
+link.download="lineup.png"
+
+link.href=canvas.toDataURL()
+
+link.click()
+
+})
+
+}
+
 render()
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 </body>
 </html>
+```
