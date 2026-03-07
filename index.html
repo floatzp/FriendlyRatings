@@ -5,7 +5,6 @@
 <title>7v7 Match Ratings</title>
 
 <style>
-
 body{
 margin:0;
 font-family:Arial;
@@ -24,7 +23,6 @@ font-weight:bold;
 }
 
 /* pitch */
-
 .field{
 width:700px;
 height:600px;
@@ -33,7 +31,6 @@ position:relative;
 border:5px solid white;
 border-radius:8px;
 overflow:hidden;
-
 /* grass stripes */
 background:
 repeating-linear-gradient(
@@ -43,11 +40,9 @@ repeating-linear-gradient(
 #1c6f39 60px,
 #1c6f39 120px
 );
-
 }
 
 /* HALF center circle */
-
 .centerCircle{
 position:absolute;
 width:160px;
@@ -60,7 +55,6 @@ transform:translateX(-50%);
 }
 
 /* penalty box */
-
 .boxBottom{
 position:absolute;
 width:300px;
@@ -70,7 +64,6 @@ left:50%;
 transform:translateX(-50%);
 bottom:0;
 }
-
 .sixBottom{
 position:absolute;
 width:150px;
@@ -82,7 +75,6 @@ bottom:0;
 }
 
 /* players */
-
 .player{
 position:absolute;
 width:80px;
@@ -91,7 +83,6 @@ cursor:pointer;
 }
 
 /* name above avatar */
-
 .name{
 font-size:12px;
 font-weight:bold;
@@ -99,7 +90,6 @@ margin-bottom:3px;
 }
 
 /* avatar */
-
 .avatar{
 width:60px;
 height:60px;
@@ -111,7 +101,6 @@ margin:auto;
 }
 
 /* rating */
-
 .rating{
 margin-top:4px;
 font-size:13px;
@@ -122,14 +111,12 @@ display:inline-block;
 }
 
 /* events */
-
 .event{
 font-size:14px;
 margin-top:2px;
 }
 
 /* cards container */
-
 .cards{
 position:absolute;
 top:10px;
@@ -140,7 +127,6 @@ font-size:14px;
 }
 
 /* modal */
-
 .modal{
 display:none;
 position:fixed;
@@ -149,7 +135,6 @@ background:rgba(0,0,0,0.7);
 align-items:center;
 justify-content:center;
 }
-
 .box{
 background:#1e293b;
 padding:20px;
@@ -172,7 +157,6 @@ color:white;
 border-radius:5px;
 cursor:pointer;
 }
-
 </style>
 </head>
 
@@ -185,148 +169,99 @@ cursor:pointer;
 </div>
 
 <div class="field" id="field">
-
 <div class="centerCircle"></div>
 <div class="boxBottom"></div>
 <div class="sixBottom"></div>
-
 </div>
 
 <div class="modal" id="modal">
 <div class="box">
-
 <h2 id="pName"></h2>
-
 <div id="viewStats"></div>
-
 <div id="editArea" style="display:none">
-
 Avatar PNG URL
 <input id="editAvatar">
-
 Name
 <input id="editName">
-
 Rating
 <input id="editRating" type="number" step="0.1">
-
 Goals (⚽)
 <input id="editGoals" type="number">
-
 Assists (👟)
 <input id="editAssists" type="number">
-
 Yellow Card
 <input id="editYellow" type="checkbox">
-
 Red Card
 <input id="editRed" type="checkbox">
-
 <button onclick="savePlayer()">Save</button>
-
 </div>
-
 <button onclick="closeModal()">Close</button>
-
 </div>
 </div>
 
 <script>
-
 const password="W0rG1Ax3c8e"
-
 let admin=false
 
 let players=[
-
 {name:"GK",rating:7.4,x:320,y:500,avatar:"",goals:0,assists:0,yellow:false,red:false},
-
 {name:"DEF 1",rating:7.2,x:150,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
 {name:"DEF 2",rating:7.0,x:320,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
 {name:"DEF 3",rating:7.1,x:500,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
-
 {name:"MID 1",rating:8.2,x:220,y:240,avatar:"",goals:1,assists:0,yellow:false,red:false},
 {name:"MID 2",rating:8.1,x:420,y:240,avatar:"",goals:0,assists:1,yellow:false,red:false},
-
 {name:"ST",rating:9.0,x:320,y:120,avatar:"",goals:2,assists:0,yellow:false,red:false}
-
 ]
 
 function ratingColor(r){
-
 if(r>=9)return"#09cadb"
 if(r>=8)return"#22c55e"
 if(r>=7)return"#eab308"
 if(r>=6)return"#f97316"
 return"#dc2626"
-
 }
 
 const field=document.getElementById("field")
-
-function render(){
-
-field.querySelectorAll(".player").forEach(p=>p.remove())
-
-players.forEach((p,i)=>{
-
-let div=document.createElement("div")
-
-div.className="player"
-
-div.style.left=p.x+"px"
-div.style.top=p.y+"px"
-
-let events=""
-events+="⚽".repeat(p.goals)
-events+="👟".repeat(p.assists)
-
-/* cards logic */
-let cardsHTML=""
-if(p.yellow) cardsHTML+="🟨"
-if(p.red) cardsHTML+="🟥"
-
-div.innerHTML=`
-
-<div class="name">${p.name}</div>
-
-<div class="avatar" style="background-image:url('${p.avatar}')"></div>
-
-<div class="cards">${cardsHTML}</div>
-
-<div class="event">${events}</div>
-
-<div class="rating" style="background:${ratingColor(p.rating)}">${p.rating}</div>
-
-`
-
-div.onclick=()=>openPlayer(i)
-
-field.appendChild(div)
-
-})
-
-}
+const pName=document.getElementById("pName")
+const viewStats=document.getElementById("viewStats")
+const editArea=document.getElementById("editArea")
+const editName=document.getElementById("editName")
+const editRating=document.getElementById("editRating")
+const editAvatar=document.getElementById("editAvatar")
+const editGoals=document.getElementById("editGoals")
+const editAssists=document.getElementById("editAssists")
+const editYellow=document.getElementById("editYellow")
+const editRed=document.getElementById("editRed")
+const modal=document.getElementById("modal")
 
 let current=null
 
-function openPlayer(i){
+function render(){
+field.querySelectorAll(".player").forEach(p=>p.remove())
+players.forEach((p,i)=>{
+let div=document.createElement("div")
+div.className="player"
+div.style.left=p.x+"px"
+div.style.top=p.y+"px"
+let events=""
+events+="⚽".repeat(p.goals)
+events+="👟".repeat(p.assists)
+let cardsHTML=""
+if(p.yellow) cardsHTML+="🟨"
+if(p.red) cardsHTML+="🟥"
+div.innerHTML=`<div class="name">${p.name}</div><div class="avatar" style="background-image:url('${p.avatar}')"></div><div class="cards">${cardsHTML}</div><div class="event">${events}</div><div class="rating" style="background:${ratingColor(p.rating)}">${p.rating}</div>`
+div.onclick=()=>openPlayer(i)
+field.appendChild(div)
+})
+}
 
+function openPlayer(i){
 current=i
 let p=players[i]
-
 pName.innerText=p.name
-
-viewStats.innerHTML=`
-Goals: ${p.goals}<br>
-Assists: ${p.assists}<br>
-Rating: ${p.rating}
-`
-
+viewStats.innerHTML=`Goals: ${p.goals}<br>Assists: ${p.assists}<br>Rating: ${p.rating}`
 if(admin){
-
 editArea.style.display="block"
-
 editName.value=p.name
 editRating.value=p.rating
 editAvatar.value=p.avatar
@@ -334,21 +269,14 @@ editGoals.value=p.goals
 editAssists.value=p.assists
 editYellow.checked=p.yellow
 editRed.checked=p.red
-
 }else{
-
 editArea.style.display="none"
-
 }
-
 modal.style.display="flex"
-
 }
 
 function savePlayer(){
-
 let p=players[current]
-
 p.name=editName.value
 p.rating=parseFloat(editRating.value)
 p.avatar=editAvatar.value
@@ -356,10 +284,8 @@ p.goals=parseInt(editGoals.value)
 p.assists=parseInt(editAssists.value)
 p.yellow=editYellow.checked
 p.red=editRed.checked
-
 render()
 closeModal()
-
 }
 
 function closeModal(){
@@ -367,24 +293,44 @@ modal.style.display="none"
 }
 
 document.addEventListener("keydown",e=>{
-
 if(e.shiftKey && e.key==="E"){
-
 let pass=prompt("Admin password")
-
 if(pass===password){
-
 admin=true
 alert("Edit mode enabled")
-
 }
-
 }
-
 })
 
-render()
+// DRAG & DROP FOR ADMIN
+let dragPlayer=null
+let offsetX=0
+let offsetY=0
 
+field.addEventListener("mousedown", e=>{
+if(!admin) return
+const target = e.target.closest(".player")
+if(!target) return
+let index = Array.from(field.children).indexOf(target)
+if(index===-1) index = Array.from(field.children).indexOf(target.parentElement)
+dragPlayer = players[index]
+offsetX = e.clientX - dragPlayer.x - field.getBoundingClientRect().left
+offsetY = e.clientY - dragPlayer.y - field.getBoundingClientRect().top
+e.preventDefault()
+})
+document.addEventListener("mousemove", e=>{
+if(!dragPlayer) return
+let newX = e.clientX - offsetX - field.getBoundingClientRect().left
+let newY = e.clientY - offsetY - field.getBoundingClientRect().top
+newX = Math.max(0, Math.min(newX, field.clientWidth - 60))
+newY = Math.max(0, Math.min(newY, field.clientHeight - 60))
+dragPlayer.x = newX
+dragPlayer.y = newY
+render()
+})
+document.addEventListener("mouseup", e=>{dragPlayer=null})
+
+render()
 </script>
 
 </body>
