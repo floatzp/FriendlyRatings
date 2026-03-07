@@ -25,46 +25,28 @@ font-weight:bold;
 
 .field{
 width:700px;
-height:1000px;
+height:600px;
 margin:auto;
 position:relative;
-background:#2f9e44;
+background:#1f7a3f;
 border:5px solid white;
 border-radius:8px;
 }
 
-/* halfway line */
-.field:before{
-content:"";
-position:absolute;
-top:50%;
-width:100%;
-height:3px;
-background:white;
-}
-
 /* center circle */
+
 .centerCircle{
 position:absolute;
 width:160px;
 height:160px;
 border:3px solid white;
 border-radius:50%;
-top:50%;
+top:0%;
 left:50%;
 transform:translate(-50%,-50%);
 }
 
-/* penalty boxes */
-.boxTop{
-position:absolute;
-width:300px;
-height:120px;
-border:3px solid white;
-left:50%;
-transform:translateX(-50%);
-top:0;
-}
+/* penalty box */
 
 .boxBottom{
 position:absolute;
@@ -76,16 +58,7 @@ transform:translateX(-50%);
 bottom:0;
 }
 
-/* 6 yard boxes */
-.sixTop{
-position:absolute;
-width:150px;
-height:60px;
-border:3px solid white;
-left:50%;
-transform:translateX(-50%);
-top:0;
-}
+/* 6 yard box */
 
 .sixBottom{
 position:absolute;
@@ -179,15 +152,13 @@ cursor:pointer;
 <div class="header">
 <span id="teamA">Team A</span>
 <span id="score">0 - 0</span>
-<span id="teamB">Team B</span>
+<span id="teamB">Opponent</span>
 </div>
 
 <div class="field" id="field">
 
 <div class="centerCircle"></div>
-<div class="boxTop"></div>
 <div class="boxBottom"></div>
-<div class="sixTop"></div>
 <div class="sixBottom"></div>
 
 </div>
@@ -213,7 +184,7 @@ Rating
 Goals (⚽)
 <input id="editGoals" type="number">
 
-Assists (🅰️)
+Assists (👟)
 <input id="editAssists" type="number">
 
 Yellow Card
@@ -238,33 +209,22 @@ let admin=false
 
 let players=[
 
-{name:"GK A",rating:7.4,x:320,y:900,avatar:"",goals:0,assists:0,yellow:false,red:false},
+{name:"GK",rating:7.4,x:320,y:500,avatar:"",goals:0,assists:0,yellow:false,red:false},
 
-{name:"DEF A1",rating:7.2,x:150,y:750,avatar:"",goals:0,assists:0,yellow:false,red:false},
-{name:"DEF A2",rating:7.0,x:320,y:760,avatar:"",goals:0,assists:0,yellow:false,red:false},
-{name:"DEF A3",rating:7.1,x:500,y:750,avatar:"",goals:0,assists:0,yellow:false,red:false},
+{name:"DEF 1",rating:7.2,x:150,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
+{name:"DEF 2",rating:7.0,x:320,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
+{name:"DEF 3",rating:7.1,x:500,y:380,avatar:"",goals:0,assists:0,yellow:false,red:false},
 
-{name:"MID A1",rating:8.2,x:220,y:560,avatar:"",goals:1,assists:0,yellow:false,red:false},
-{name:"MID A2",rating:8.1,x:420,y:560,avatar:"",goals:0,assists:1,yellow:false,red:false},
+{name:"MID 1",rating:8.2,x:220,y:240,avatar:"",goals:1,assists:0,yellow:false,red:false},
+{name:"MID 2",rating:8.1,x:420,y:240,avatar:"",goals:0,assists:1,yellow:false,red:false},
 
-{name:"ST A",rating:9.0,x:320,y:420,avatar:"",goals:2,assists:0,yellow:false,red:false},
-
-{name:"GK B",rating:6.8,x:320,y:40,avatar:"",goals:0,assists:0,yellow:false,red:false},
-
-{name:"DEF B1",rating:7.3,x:150,y:200,avatar:"",goals:0,assists:0,yellow:false,red:false},
-{name:"DEF B2",rating:7.0,x:320,y:180,avatar:"",goals:0,assists:0,yellow:false,red:false},
-{name:"DEF B3",rating:6.9,x:500,y:200,avatar:"",goals:0,assists:0,yellow:false,red:false},
-
-{name:"MID B1",rating:7.8,x:220,y:380,avatar:"",goals:0,assists:1,yellow:false,red:false},
-{name:"MID B2",rating:7.9,x:420,y:380,avatar:"",goals:1,assists:0,yellow:false,red:false},
-
-{name:"ST B",rating:8.6,x:320,y:520,avatar:"",goals:1,assists:0,yellow:false,red:false}
+{name:"ST",rating:9.0,x:320,y:120,avatar:"",goals:2,assists:0,yellow:false,red:false}
 
 ]
 
 function ratingColor(r){
 
-if(r>=9)return"#16a34a"
+if(r>=9)return"#09cadb"
 if(r>=8)return"#22c55e"
 if(r>=7)return"#eab308"
 if(r>=6)return"#f97316"
@@ -294,7 +254,7 @@ else if(p.yellow)card="🟨"
 
 let events=""
 events+="⚽".repeat(p.goals)
-events+="🅰️".repeat(p.assists)
+events+="👟".repeat(p.assists)
 
 div.innerHTML=`
 
@@ -397,4 +357,3 @@ render()
 
 </body>
 </html>
-```
