@@ -20,6 +20,7 @@ gap:20px;
 margin:15px;
 font-size:22px;
 font-weight:bold;
+cursor:pointer;
 }
 
 /* pitch */
@@ -162,7 +163,7 @@ cursor:pointer;
 
 <body>
 
-<div class="header">
+<div class="header" onclick="editHeader()">
 <span id="teamA">Team A</span>
 <span id="score">0 - 0</span>
 <span id="teamB">Opponent</span>
@@ -302,33 +303,16 @@ alert("Edit mode enabled")
 }
 })
 
-// DRAG & DROP FOR ADMIN
-let dragPlayer=null
-let offsetX=0
-let offsetY=0
-
-field.addEventListener("mousedown", e=>{
-if(!admin) return
-const target = e.target.closest(".player")
-if(!target) return
-let index = Array.from(field.children).indexOf(target)
-if(index===-1) index = Array.from(field.children).indexOf(target.parentElement)
-dragPlayer = players[index]
-offsetX = e.clientX - dragPlayer.x - field.getBoundingClientRect().left
-offsetY = e.clientY - dragPlayer.y - field.getBoundingClientRect().top
-e.preventDefault()
-})
-document.addEventListener("mousemove", e=>{
-if(!dragPlayer) return
-let newX = e.clientX - offsetX - field.getBoundingClientRect().left
-let newY = e.clientY - offsetY - field.getBoundingClientRect().top
-newX = Math.max(0, Math.min(newX, field.clientWidth - 60))
-newY = Math.max(0, Math.min(newY, field.clientHeight - 60))
-dragPlayer.x = newX
-dragPlayer.y = newY
-render()
-})
-document.addEventListener("mouseup", e=>{dragPlayer=null})
+// EDIT HEADER FOR TEAM NAMES & SCORE
+function editHeader(){
+if(!admin) return;
+const teamA=prompt("Enter Team A name", document.getElementById('teamA').innerText);
+const teamB=prompt("Enter Team B name", document.getElementById('teamB').innerText);
+const score=prompt("Enter Score (format: 0 - 0)", document.getElementById('score').innerText);
+if(teamA) document.getElementById('teamA').innerText = teamA;
+if(teamB) document.getElementById('teamB').innerText = teamB;
+if(score) document.getElementById('score').innerText = score;
+}
 
 render()
 </script>
